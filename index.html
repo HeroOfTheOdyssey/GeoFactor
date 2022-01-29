@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<head>
+    <!-- <link rel="stylesheet" href="css/pure-min.css" /> -->
+    <link rel="stylesheet" href="css/style.css">
+    <link href="css/halfmoon-variables.css" rel="stylesheet" />
+    <!-- <link href="css/halfmoon.css" rel="stylesheet" /> -->
+    <script src="js/external/jquery-3.6.0.min.js"></script>
+    <script src="js/external/two.min.js"></script>
+    <!-- <script src="js/external/d3.min.js"></script> -->
+    <script src="js/internal/utils.js"></script>
+    <script src="js/internal/polyman.js"></script>
+    <script src="js/code.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="content-wrapper">
+            <div class="d-flex justify-content-around">
+                <form class="form-inline-sm pure-form pure-form-aligned" action="javascript:void(0);"
+                    onsubmit="handleForm();">
+                    <fieldset>
+                        <legend>Geometric Factorization</legend>
+
+                        <div class="row form-group">
+                            <div class="col-sm-5">
+                                <label for="qp">Quasiprime</label>
+                                <input class="form-control alt-dm" type="number" id="qp" value="30607"
+                                    placeholder="Quasiprime" />
+                            </div>
+                            <div class="col-sm-5">
+                                <label for="clr">Render Quality</label>
+                                <input class="form-control alt-dm" type="number" id="clr" value="1000"
+                                    placeholder="Render Quality" />
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-sm-6 custom-switch .d-inline-block">
+                                <input class="form-control alt-dm" type="checkbox" id="grt" value="" checked />
+                                <label for="grt" class="pure-checkbox">Generate Rotations?</label>
+                            </div>
+                            <div class="col-sm-6 custom-switch .d-inline-block">
+                                <input class="form-control alt-dm" type="checkbox" id="showXAxis" value="" checked />
+                                <label for="showXAxis" class="pure-checkbox">Display X Axis?</label>
+                            </div>
+                            <div class="col-sm-6 custom-switch .d-inline-block">
+                                <input class="form-control alt-dm" type="checkbox" id="showYAxis" value="" checked />
+                                <label for="showYAxis" class="pure-checkbox">Display Y Axis?</label>
+                            </div>
+                            <div class="col-sm-6 custom-switch .d-inline-block">
+                                <input class="form-control alt-dm" type="checkbox" id="darkmodeTGL" value="" />
+                                <label for="darkmodeTGL" class="pure-checkbox">Toggle Dark Mode</label>
+                            </div>
+                        </div>
+                        <button type="submit" value="Submit" class="btn btn-primary alt-dm">Generate Polygons</button>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="pure-g">
+        <div id="twojs" class="pure-u-1">
+        </div>
+    </div>
+
+
+    <script src="js/external/halfmoon.js"></script>
+</body>

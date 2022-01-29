@@ -1,0 +1,31 @@
+
+/* body{ 
+    margin: 100; 
+    padding: 0; 
+    overflow:hidden;
+    text-align:center !important;
+}
+
+svg{
+  inset: 8vh 0px 0px 0px !important; /* offset 10vh from top
+  for some reason twojs overrides inset when rendering. mark important to override this behavior-find better solution.
+  
+  z-index: -1;
+} */
+/* Flip the vertical axis in svg to emulate cartesian. */
+/*svg.cartesian {
+    display:flex;
+    position: absolute;
+    top:0;
+  }
+  svg.cartesian > g {
+    transform: scaleY(-1);
+ 
+  }
+  Re-flip all <text> element descendants to their original side up. 
+  svg.cartesian > g text {
+    transform: scaleY(-1);
+  }
+.pr {
+    position:absolute; top:0; bottom:0; left:0; 
+}*/
