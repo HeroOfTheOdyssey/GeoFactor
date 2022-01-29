@@ -35,7 +35,7 @@
  * Polygon helper class
  * @module utils
  */
-
+//requires jquery for retrieving prime pair from rsagen
 var utils = new function () {
 
     var internalFunction = function () {
@@ -124,6 +124,7 @@ var utils = new function () {
     this.publicFunction = function () {
 
     };
+    
     /**
      * Internal helper Function to allow values to be precalculated
      * @param {number} sidecount polygon side count
@@ -226,6 +227,20 @@ var utils = new function () {
             this.Factored = true;
         }
 
+    }
+    this.retrieveRandomPrimeEnvelope = function(bits){
+        let PE = false;
+        let res = false;
+        $.ajax({
+            url : `https://rsagen.crownsterling.io/gen/${bits}`,
+            success : function(result){
+               res = JSON.parse(result);
+            }
+        });
+        if(res){
+            PE = new this.PrimeEnvelope(res.pk, res.p1, res.p2);
+        }
+        return PE;
     }
     /**
      * Represents a line segment in 2D space
