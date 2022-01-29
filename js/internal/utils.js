@@ -8,8 +8,8 @@
 /**
  * A 2D Line Segment
  * @typedef {Object} Line
- * @property {Point} a Start Point of Line
- * @property {Point} b End Point of Line
+ * @property {Point} from Start Point of Line
+ * @property {Point} to End Point of Line
  */
 /**
  * A 2D Polygon
@@ -230,14 +230,14 @@ var utils = new function () {
     /**
      * Represents a line segment in 2D space
      * @constructor
-     * @param {Point} a Start Point of Line
-     * @param {Point} b End Point of Line
+     * @param {Point} from Start Point of Line
+     * @param {Point} to End Point of Line
      */
-    this.Line = function (a, b) { //a and b are points
+    this.Line = function (from, to) { //a and b are points
         /** @type {Point} */
-        this.a = a;
+        this.from = from;
         /** @type {Point} */
-        this.b = b;
+        this.to = to;
     };
     /**
      * Returns subject rotated about origin given degrees
@@ -379,7 +379,7 @@ var utils = new function () {
      * @returns the distance a point is from 0,0
      */
     this.GetDistanceFromOrigin = function(Point){
-        return Math.sqrt(Point.X**2 + Point.Y**2);
+        return Math.sqrt(Point.x**2 + Point.y**2);
     }
     /**
      * Returns intersection Point of two line segments if they intersect. Returns false if they don't intersect.
@@ -392,20 +392,20 @@ var utils = new function () {
         // Denominator for ua and ub are the same, so store this calculation
         var zero = false;
         var d =
-            (L2.b.y - L2.a.y) * (L1.b.x - L1.a.x)
+            (L2.to.y - L2.from.y) * (L1.to.x - L1.from.x)
             -
-            (L2.b.x - L2.a.x) * (L1.b.y - L1.a.y);
+            (L2.to.x - L2.from.x) * (L1.to.y - L1.from.y);
 
         //n_a and n_b are calculated as seperate values for readability
         var n_a =
-            (L2.b.x - L2.a.x) * (L1.a.y - L2.a.y)
+            (L2.to.x - L2.from.x) * (L1.from.y - L2.from.y)
             -
-            (L2.b.y - L2.a.y) * (L1.a.x - L2.a.x);
+            (L2.to.y - L2.from.y) * (L1.from.x - L2.from.x);
 
         var n_b =
-            (L1.b.x - L1.a.x) * (L1.a.y - L2.a.y)
+            (L1.to.x - L1.from.x) * (L1.from.y - L2.from.y)
             -
-            (L1.b.y - L1.a.y) * (L1.a.x - L2.a.x);
+            (L1.to.y - L1.from.y) * (L1.from.x - L2.from.x);
 
         // Make sure there is not a division by zero - this also indicates that
         // the lines are parallel.  
@@ -423,7 +423,7 @@ var utils = new function () {
         // intersect.  If the fractional calculation is larger than 1 or smaller
         // than 0 the lines would need to be longer to intersect.
         if (ua >= 0 && ua <= 1 && ub >= d && ub <= 1) {
-            return new utils.Point(L1.a.x + (ua * (L1.b.x - L1.a.x)), L1.a.y + (ua * (L1.b.y - L1.a.y)));
+            return new utils.Point(L1.from.x + (ua * (L1.to.x - L1.from.x)), L1.from.y + (ua * (L1.to.y - L1.from.y)));
 
         }
         return zero;
