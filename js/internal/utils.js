@@ -45,8 +45,8 @@ var utils = new function () {
     * Helper class for using two with normal polygons
     * @module utils.two
     */
-    this.two = new function(){//helpers specific to two.js library
-        this.PathOptions = function(fillColor, strokeColor, linewidth, opacity, visible, cssClass){
+    this.two = new function () {//helpers specific to two.js library
+        this.PathOptions = function (fillColor, strokeColor, linewidth, opacity, visible, cssClass) {
             this.fillColor = fillColor;
             this.strokeColor = strokeColor;
             this.linewidth = linewidth;
@@ -55,10 +55,10 @@ var utils = new function () {
             this.cssClass = cssClass;
         }
         this.DefaultPath = new this.PathOptions('transparent', 'black', 1, 1.0, true, '');
-        this.pointToAnchor = function(point){
+        this.pointToAnchor = function (point) {
             return new Two.Anchor(point.x, point.y);
         }
-        this.polygonToPath = function(polygon, pathoptions = this.DefaultPath){
+        this.polygonToPath = function (polygon, pathoptions = this.DefaultPath) {
             var anchors = new Array();
             polygon.Points.forEach(point => {
                 anchors.push(this.pointToAnchor(point));
@@ -72,9 +72,9 @@ var utils = new function () {
             Path.className = pathoptions.cssClass;
             return Path;
         }
-        this.polygonGroupToGroup = function(polygongroup, pathoptions = this.DefaultPath){
+        this.polygonGroupToGroup = function (polygongroup, pathoptions = this.DefaultPath) {
             childrenpaths = new Array();
-            polygongroup.Polygons.forEach(polygon=>{
+            polygongroup.Polygons.forEach(polygon => {
                 childrenpaths.push(this.polygonToPath(polygon, pathoptions));
             });
             var Group = new Two.Group(childrenpaths);
@@ -87,44 +87,44 @@ var utils = new function () {
             return Group;
         }
     }
-    this.storage = new function(){
+    this.storage = new function () {
         polygonGroupKey = "POLY";
         renderGroupsKey = "RENDER";
     }
-    var generateUUID = function() {
+    var generateUUID = function () {
         var d = new Date().getTime();
-        var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-        var uuid = 'xyxxxyxxxy'.replace(/[xy]/g, function(c) {
+        var d2 = (performance && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+        var uuid = 'xyxxxyxxxy'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16;
-            if(d > 0){
-                var r = (d + r)%16 | 0;
-                d = Math.floor(d/16);
+            if (d > 0) {
+                var r = (d + r) % 16 | 0;
+                d = Math.floor(d / 16);
             } else {
-                var r = (d2 + r)%16 | 0;
-                d2 = Math.floor(d2/16);
+                var r = (d2 + r) % 16 | 0;
+                d2 = Math.floor(d2 / 16);
             }
-            return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+            return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
         });
         return uuid;
     }
     const storageKey = "POLY";
-    this.savePolysToLocalStorage = function(polygroupArray){
+    this.savePolysToLocalStorage = function (polygroupArray) {
         var json = JSON.stringify(polygroupArray);
         localStorage.setItem(storageKey, json);
         return true;
     }
-    this.retrievePolysLocalStorage = function(){
+    this.retrievePolysLocalStorage = function () {
         lsitem = localStorage.getItem(storageKey);
-        if(lsitem === null) return false;
+        if (lsitem === null) return false;
         else return JSON.parse(localStorage.getItem(storageKey));
     }
-    this.clearLocalStorage = function(){
+    this.clearLocalStorage = function () {
         localStorage.removeItem(storageKey);
     }
     this.publicFunction = function () {
 
     };
-    
+
     /**
      * Internal helper Function to allow values to be precalculated
      * @param {number} sidecount polygon side count
@@ -183,11 +183,11 @@ var utils = new function () {
     this.areaToRadius = function (area, sidecount) {
         return Math.sqrt((2 * area) / radiusprecalc(sidecount));
     }
-    this.circleRadiusToArea = function(radius){
-        return Math.PI * (radius*radius); //pi*r^2
+    this.circleRadiusToArea = function (radius) {
+        return Math.PI * (radius * radius); //pi*r^2
     }
-    this.circleAreaToRadius = function(area){
-        return Math.sqrt(area/Math.PI);
+    this.circleAreaToRadius = function (area) {
+        return Math.sqrt(area / Math.PI);
     }
     /**
      * Represents a point in 2D space
@@ -210,7 +210,7 @@ var utils = new function () {
      * @param {number} PrimeA 
      * @param {number} PrimeB
      */
-    this.PrimeEnvelope = function(QuasiPrime=0, PrimeA=0, PrimeB=0){
+    this.PrimeEnvelope = function (QuasiPrime = 0, PrimeA = 0, PrimeB = 0) {
         /** @type {number} */
         this.QuasiPrime = QuasiPrime;
         /** @type {number} */
@@ -219,27 +219,21 @@ var utils = new function () {
         this.PrimeB = PrimeB;
         /** @type {bool} */
         this.Factored = false;
-        if(this.PrimeA != 0 && this.PrimeB != 0){
-            if(this.PrimeA*this.PrimeB!=this.QuasiPrime){
+        if (this.PrimeA != 0 && this.PrimeB != 0) {
+            if (this.PrimeA * this.PrimeB != this.QuasiPrime) {
                 console.log("Prime envelope error"); //throw error because there should be equality
-                this.QuasiPrime = this.PrimeA*this.PrimeB; //fix error
+                this.QuasiPrime = this.PrimeA * this.PrimeB; //fix error
             }
             this.Factored = true;
         }
 
     }
-    this.retrieveRandomPrimeEnvelope = function(bits){
-        let PE = false;
-        let res = false;
-        $.ajax({
-            url : `https://rsagen.crownsterling.io/gen/${bits}`,
-            success : function(result){
-               res = JSON.parse(result);
-            }
+    this.retrieveRandomPrimeEnvelope = function (bits) {
+        return $.getJSON(`https://rsagen.crownsterling.io/gen/${bits}`).then(function(data){
+            PE = new utils.PrimeEnvelope(data.pk, data.p1, data.p2);
+            return PE
         });
-        if(res){
-            PE = new this.PrimeEnvelope(res.pk, res.p1, res.p2);
-        }
+        
         return PE;
     }
     /**
@@ -371,13 +365,13 @@ var utils = new function () {
                 this.Polygons.splice(index, 1);
                 this.twoGroup.remove(Polygon.twoPath);
             }
-            else{return false;}//element not in array
+            else { return false; }//element not in array
             return true;
         }
     }
-    this.consolidatePolygonGroups = function (polygonGroupArray){
+    this.consolidatePolygonGroups = function (polygonGroupArray) {
         consolidatedPGroup = new this.PolygonGroup();
-        polygonGroupArray.forEach(function(pgroup){
+        polygonGroupArray.forEach(function (pgroup) {
             consolidatedPGroup.addArray(pgroup.Polygons);
         });
         return consolidatedPGroup;
@@ -387,14 +381,14 @@ var utils = new function () {
      * @type {Point} 
      */
     this.Origin = new this.Point(0, 0);
-    
+
     /**
      * Returns the distance a point is from 0,0
      * @param {Point} Point
      * @returns the distance a point is from 0,0
      */
-    this.GetDistanceFromOrigin = function(Point){
-        return Math.sqrt(Point.x**2 + Point.y**2);
+    this.GetDistanceFromOrigin = function (Point) {
+        return Math.sqrt(Point.x ** 2 + Point.y ** 2);
     }
     /**
      * Returns intersection Point of two line segments if they intersect. Returns false if they don't intersect.

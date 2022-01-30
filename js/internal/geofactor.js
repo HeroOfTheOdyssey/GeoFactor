@@ -69,16 +69,29 @@ var geofactor = new function () {
         console.log(intersections);//log the size, how many intersections
         return intersections;
     }
-
+    this.test = function (primes, bits) {
+        var testResults = new Array();
+        for (let i = 0; i < primes; i++) {
+            utils.retrieveRandomPrimeEnvelope(bits).then(function (PrimeEnvelope) {
+                let result = geofactor.Factorize(PrimeEnvelope.QuasiPrime, 30);
+                //console.log(result);
+                if (result) {
+                    testResults.push(result);
+                }
+            }
+            );
+        }
+        return testResults;
+    }
     this.Factorize = function (QuasiPrime, range, sidecntmax = 12) {//range is percentage
         //let qpRadii = utils.circleAreaToRadius(QuasiPrime);
-        var ms1 = performance.now();
+        let ms1 = performance.now();
         let qpRadii = Math.sqrt(QuasiPrime);//no idea how this works tbh
         let radiiVectors = this.makeUnitRadiiVectors(sidecntmax);
-        //let rangecalc = range;//temporary range hack
-        let rangecalc = Math.round(Math.round(QuasiPrime ** 0.25)/2*range);
+        let rangecalc = range;//temporary range hack
+        //let rangecalc = Math.round(Math.round(QuasiPrime ** 0.25) / 2 * range);
         var primeData = false;
-        console.log(radiiVectors);
+        //console.log(radiiVectors);
         let testedMeans = new Array();
         let testedTests = new Array();
         radiiVectors.some(function (radii) {
@@ -116,10 +129,14 @@ var geofactor = new function () {
 
             if (primeData) return primeData;
         });
-        var ms2 = performance.now();
-        console.log(`completed in ${Math.round(ms2-ms1)}ms`);
+        let ms2 = performance.now();
+        let time = Math.round(ms2 - ms1);
+        console.log(`completed in ${time}ms`);
         //console.log(primeData);
-        if (primeData) return primeData;
+        if (primeData) {
+            primeData.time = time;
+            return primeData;
+        }
 
 
     }
