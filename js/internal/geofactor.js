@@ -1,26 +1,29 @@
 /** 
  * Factorize and Analyse Quasiprimes
- * @module geofactor
- * 
- * This class requires the module utils.js
- * @requires module:utils
- * @requires module:polyman
 */
 var geofactor = new function () {
     /**
      * Returns the intersection points of regular polygons up to sidecntmax
      * @param {number} sidecntmax Maximum amount of sides
-     * @returns {Set} The ntersection Points of Unit Polygons
+     * @returns {Array} The ntersection Points of Unit Polygons
      */
     this.makeUnitIntersectionVectors = function (sidecntmax = 12) {
         let unitPolygons = polyman.GetUnitPolygons(sidecntmax);
-        return this.GetPolygonIntersections(unitPolygons);
+        //let b = utils.
+        return utils.GetPolygonIntersectionsNew(unitPolygons);
     }
+    /**
+     * Generates unit area polygons up to given side count, calculates every intersection point, then returns an array with the distance from origin for every intersection
+     * @param {number} sidecntmax 
+     * @returns {Array} An array with the distance from origin for every intersection
+     */
     this.makeUnitRadiiVectors = function (sidecntmax = 12) {
-        let LS = this.retrieveVectorLocalStorage();
+        let LS = geofactor.retrieveVectorLocalStorage();
         if (LS != false) return LS;
+        
         else {
-            let intersectionVectors = this.makeUnitIntersectionVectors(sidecntmax);
+            let intersectionVectors = geofactor.makeUnitIntersectionVectors(sidecntmax);
+            console.log(intersectionVectors);
             let UnitRadius = Math.sqrt(1 / Math.PI);
 
             let interiorRadii = new Set();//could probably use array for quicker implementation
@@ -35,45 +38,14 @@ var geofactor = new function () {
             return vects;//they are sorted and then merged as exterior are prioritized
         }
     }
-    this.GetPolygonIntersections = function (polygroups) {
-        var intersections = new Array();
-        polygroup = utils.consolidatePolygonGroups(polygroups);
-        polygroup.Polygons.forEach(function (P1) {
-            polygroup.Polygons.forEach(function (P2) {
-                if (P1.ID != P2.ID) {
-                    //console.log(P2);
-                    P1.GetSegments().forEach(function (L1) {
-                        P2.GetSegments().forEach(function (L2) {//unsure if this is proper
-                            let intersection = utils.GetIntersection(L1, L2);
 
-                            //Point intersection = DoLinesIntersect(L1, L2); //test
-                            if (intersection == false || intersection.x == 0 && intersection.y == 0) {
-                                //Debug.WriteLine("0");
-                                //console.log(intersection);
-                            }
-                            else {
-                                //console.log(intersection);
-                                //Debug.WriteLine("found");
-                                if (intersection.x >= 0 && intersection.y >= 0 || true)//only search in positive quadrant
-                                {
-                                    console.log("blop");
-                                    intersections.push(intersection);
-                                }
-                            }
-                        });
-                    });
-                }
-            });
-        });
-        //in c# used distinct here. transferred over by using javascript set. not all duplicates are removed, as {a:2, b:1}!={a:2, b:1}
-        console.log(intersections);//log the size, how many intersections
-        return intersections;
-    }
-    this.test = function (primes, bits) {
+
+    this.test = function (primes, bits, accuracy, sidecntmax, resetIntersections=false) {
         var testResults = new Array();
+        if(resetIntersections)this.clearLocalStorage();
         for (let i = 0; i < primes; i++) {
             utils.retrieveRandomPrimeEnvelope(bits).then(function (PrimeEnvelope) {
-                let result = geofactor.Factorize(PrimeEnvelope.QuasiPrime, 30);
+                let result = geofactor.Factorize(PrimeEnvelope.QuasiPrime, accuracy, sidecntmax);
                 //console.log(result);
                 if (result) {
                     testResults.push(result);

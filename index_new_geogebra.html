@@ -47,8 +47,8 @@
         integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
     <!-- Roboto font (Used when Apple system fonts are not available) -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
-    
-    
+
+
     <!-- <script src="js/external/tree.min.js"></script> -->
 
 
@@ -159,7 +159,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Page wrapper start -->
     <div id="page-wrapper" class="page-wrapper with-navbar with-sidebar with-navbar-fixed-bottom with-transitions"
         data-sidebar-type="overlayed-sm-and-down">
@@ -258,69 +258,72 @@
                         <a href="#modal-1" class="btn btn-primary" role="button">Modify Render Attributes</a>
 
                     </div>
-                    <div class="card col-6">
-                        <h2 class="card-title">
-                            Factorization Options
-                        </h2>
-                        
-                        <form action="..." method="...">
-                            <div class="row">
-                                <div class="col-sm mx-5">
-                                    <div class="input-group mb-10">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Prime A</span>
+                    <div class="card col-6 border-0 p-0">
+                        <details class="collapse-panel">
+                            <summary class="collapse-header">
+                                Factorization Options
+                            </summary>
+                            <div class="collapse-content">
+                                <form action="..." method="...">
+                                    <div class="row">
+                                        <div class="col-sm mx-5">
+                                            <div class="input-group mb-10">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Prime A</span>
+                                                </div>
+                                                <input type="number" class="form-control text-right" id="prime-a"
+                                                    placeholder="">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">INT</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="input-group mb-10">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">QuasiPrime</span>
+                                                </div>
+                                                <input type="number" class="form-control" id="quasiprime">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">INT</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <input type="number" class="form-control text-right" id="prime-a" placeholder="">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">INT</span>
+                                        <div class="col-sm">
+                                            <div class="input-group mb-10 mx-5">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Prime B</span>
+                                                </div>
+                                                <input type="number" id="prime-b" class="form-control text-right">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">INT</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-        
-                                    <div class="input-group mb-10">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">QuasiPrime</span>
-                                        </div>
-                                        <input type="number" class="form-control" id="quasiprime">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">INT</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm">
-                                    <div class="input-group mb-10 mx-5">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Prime B</span>
-                                        </div>
-                                        <input type="number" id="prime-b" class="form-control text-right">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">INT</span>
+                                    <div hidden class="row">
+                                        <div class="col-sm">
+                                            <div class="custom-switch mb-10 mx-5">
+                                                <input type="checkbox" class="form-control" id="visible" value=""
+                                                    checked="checked">
+                                                <label for="visible">Visible?</label>
+                                            </div>
+                                            <div class="custom-switch mb-10 mx-5">
+                                                <input type="checkbox" class="form-control" id="showPath" value="">
+                                                <label for="showPath">Display Shape Path(s)?</label>
+                                            </div>
+                                            <div class="custom-switch mb-10 mx-5">
+                                                <input type="checkbox" class="form-control" id="fill" value="">
+                                                <label for="showFill">Fill Shape(s)?</label>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
-                            <div class="row">
-                                <div class="col-sm">
-                                    <div class="custom-switch mb-10 mx-5">
-                                        <input type="checkbox" class="form-control" id="visible" value="" checked="checked">
-                                        <label for="visible">Visible?</label>
-                                    </div>
-                                    <div class="custom-switch mb-10 mx-5">
-                                        <input type="checkbox" class="form-control" id="showPath" value="">
-                                        <label for="showPath">Display Shape Path(s)?</label>
-                                    </div>
-                                    <div class="custom-switch mb-10 mx-5">
-                                        <input type="checkbox" class="form-control" id="fill" value="">
-                                        <label for="showFill">Fill Shape(s)?</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                        </details>
                     </div>
                 </div>
-                <div class="row">
-                    <div id="twojs" class="card align-self-stretch">
-<!--                         <svg class="w-full" id="twojs">
-                        </svg> -->
+                <div class="card border-0  mw-full">
+                    <div id="geogeb" class="">
                     </div>
                 </div>
             </div>
@@ -349,13 +352,12 @@
     <!-- Halfmoon JS -->
     <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
     <script src="js/external/jquery-3.6.0.min.js"></script>
-    <script src="js/external/two.min.js"></script>
-    <script src="js/external/zui.js"></script>
+    <script src="https://www.geogebra.org/apps/deployggb.js"></script>
     <script src="js/external/isect.min.js"></script>
     <script src="js/internal/utils.js"></script>
     <script src="js/internal/polyman.js"></script>
-    <script src="js/code.js"></script>
     <script src="js/internal/geofactor.js"></script>
+    <script src="js/gebgen.js"></script>
     <script type="text/javascript">
         // Toasts a default alert
         function toastAlert() {

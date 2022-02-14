@@ -30,13 +30,10 @@
  * @property {number} QuasiPrime
  * @property {bool} Factored
  */
-
 /** 
  * Polygon helper class
- * @module utils
  */
-//requires jquery for retrieving prime pair from rsagen
-var utils = new function () {
+ var utils = new function () {
 
     var internalFunction = function () {
 
@@ -123,7 +120,7 @@ var utils = new function () {
     }
     this.publicFunction = function () {
 
-    };
+    }
 
     /**
      * Internal helper Function to allow values to be precalculated
@@ -173,7 +170,7 @@ var utils = new function () {
                 } */
 
         return output;
-    };
+    }
     /**
      * Returns the calculated radius for regular polygon given area and sidecount
      * @param {number} area area of polygon
@@ -229,11 +226,11 @@ var utils = new function () {
 
     }
     this.retrieveRandomPrimeEnvelope = function (bits) {
-        return $.getJSON(`https://rsagen.crownsterling.io/gen/${bits}`).then(function(data){
+        return $.getJSON(`https://rsagen.crownsterling.io/gen/${bits}`).then(function (data) {
             PE = new utils.PrimeEnvelope(data.pk, data.p1, data.p2);
             return PE
         });
-        
+
         return PE;
     }
     /**
@@ -436,6 +433,76 @@ var utils = new function () {
 
         }
         return zero;
-    };
+    }
+
+    /**
+     * Given an array of line segments, retrieves the intersection points
+     * @param {[Line]} Lines Line segments to intersect
+     * @returns {[Point]} Intersection points
+     */
+    this.GetIntersections = function (Lines) {//currently returns array of points, can be modified to return the associated segments
+        console.log(Lines);
+        let prep = isect.bush(Lines);
+        let output = prep.run();
+        let returnval = new Array();
+        output.forEach(intersection => {
+            returnval.push(intersection.point);
+        });
+        return returnval;
+    }
+    /**
+     * Given an array of PolygonGroups, calculate and return their intersections
+     * @param {[PolygonGroup]} polygroups Array of PolygonGroups to intersect
+     * @returns {[Point]} Intersection points of given polygongroups
+     */
+    this.GetPolygonIntersections = function (polygroups) {
+        var intersections = new Array();
+        polygroup = utils.consolidatePolygonGroups(polygroups);
+        polygroup.Polygons.forEach(function (P1) {
+            polygroup.Polygons.forEach(function (P2) {
+                if (P1.ID != P2.ID) {
+                    //console.log(P2);
+                    P1.GetSegments().forEach(function (L1) {
+                        P2.GetSegments().forEach(function (L2) {//unsure if this is proper
+                            let intersection = utils.GetIntersection(L1, L2);
+
+                            //Point intersection = DoLinesIntersect(L1, L2); //test
+                            if (intersection == false || intersection.x == 0 && intersection.y == 0) {
+                                //Debug.WriteLine("0");
+                                //console.log(intersection);
+                            }
+                            else {
+                                //console.log(intersection);
+                                //Debug.WriteLine("found");
+                                if (intersection.x >= 0 && intersection.y >= 0 || true)//only search in positive quadrant
+                                {
+                                    //console.log("blop");
+                                    intersections.push(intersection);
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        });
+        //in c# used distinct here. transferred over by using javascript set. not all duplicates are removed, as {a:2, b:1}!={a:2, b:1}
+        console.log(intersections);//log the size, how many intersections
+        return intersections;
+    }
+
+    /**
+    * Given an array of PolygonGroups, calculate and return their intersections
+    * @param {[PolygonGroup]} polygroups Array of PolygonGroups to intersect
+    * @returns {[Point]} Intersection points of given polygongroups
+    */
+    this.GetPolygonIntersectionsNew = function (polygroups) {
+        let polygroup = utils.consolidatePolygonGroups(polygroups);
+        console.log(polygroup);
+        let segments = new Array();
+        polygroup.Polygons.forEach(polygon => {
+            segments.push(...polygon.GetSegments());
+        });
+        return utils.GetIntersections(segments);
+    }
 
 };

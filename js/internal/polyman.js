@@ -1,9 +1,5 @@
 /** 
  * Generate regular polygons
- * @module polyman
- * 
- * This class requires the module utils.js
- * @requires module:utils
 */
 var polyman = new function(){//implement two.js display option for debugging purposes
     /**
@@ -124,4 +120,4 @@ var polyman = new function(){//implement two.js display option for debugging pur
         rootGroup.visible = pathoptions.visible;
         return rootGroup;
     }
-}
+};
