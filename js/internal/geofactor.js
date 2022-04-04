@@ -1,7 +1,7 @@
 /** 
  * Factorize and Analyse Quasiprimes
 */
-var geofactor = new funcution () {
+var geofactor = new function () {
     /**
      * Returns the intersection points of regular polygons up to sidecntmax
      * @param {number} sidecntmax Maximum amount of sides
