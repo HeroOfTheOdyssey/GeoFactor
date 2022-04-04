@@ -33,6 +33,12 @@
 /** 
  * Polygon helper class
  */
+ math.config({
+    epsilon: 1e-12,
+    number: 'BigNumber',      // Default type of number:
+                              // 'number' (default), 'BigNumber', or 'Fraction'
+    precision: 100             // Number of significant digits for BigNumbers
+  });
  var utils = new function () {
 
     var internalFunction = function () {
@@ -88,22 +94,22 @@
         polygonGroupKey = "POLY";
         renderGroupsKey = "RENDER";
     }
-    var generateUUID = function () {
-        var d = new Date().getTime();
-        var d2 = (performance && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-        var uuid = 'xyxxxyxxxy'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16;
-            if (d > 0) {
-                var r = (d + r) % 16 | 0;
-                d = Math.floor(d / 16);
-            } else {
-                var r = (d2 + r) % 16 | 0;
-                d2 = Math.floor(d2 / 16);
-            }
-            return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
-        });
-        return uuid;
-    }
+    function generateUUID() {
+         var d = new Date().getTime();
+         var d2 = (performance && performance.now && (performance.now() * 1000)) || 0; //Time in microseconds since page-load or 0 if unsupported
+         var uuid = 'xyxxxyxxxy'.replace(/[xy]/g, function (c) {
+             var r = Math.random() * 16;
+             if (d > 0) {
+                 var r = (d + r) % 16 | 0;
+                 d = Math.floor(d / 16);
+             } else {
+                 var r = (d2 + r) % 16 | 0;
+                 d2 = Math.floor(d2 / 16);
+             }
+             return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+         });
+         return uuid;
+     }
     const storageKey = "POLY";
     this.savePolysToLocalStorage = function (polygroupArray) {
         var json = JSON.stringify(polygroupArray);
@@ -130,10 +136,9 @@
     var radiusprecalc = function (sidecount) {
         //(Ngon)         R = sqrt( (2*area) / (N*sin(2*pi/N)))
         //area to radius for regular polygon
-
-
         //this is calculated value of (N*sin(2*pi/N)) for Ngons 3-12
-        var output = (sidecount * Math.sin(2 * Math.PI / sidecount));
+        var output = math.evaluate(`${sidecount} * sin(tau / ${sidecount})`);
+        //var output = (sidecount * Math.sin(2 * Math.PI / sidecount));
 
         /*         switch (sides)                                                              //using precalculated values is quicker
                 {
@@ -178,13 +183,13 @@
      * @returns {number} calculated radius for regular polygon given area and sidecount
      */
     this.areaToRadius = function (area, sidecount) {
-        return Math.sqrt((2 * area) / radiusprecalc(sidecount));
+        return math.evaluate(`sqrt((2 * ${area}) / ${radiusprecalc(sidecount)})`);
     }
     this.circleRadiusToArea = function (radius) {
-        return Math.PI * (radius * radius); //pi*r^2
+        return math.evaluate(`pi * (${radius}^2)`); //pi*r^2
     }
     this.circleAreaToRadius = function (area) {
-        return Math.sqrt(area / Math.PI);
+        return math.evaluate(`sqrt(${area} / pi)`);
     }
     /**
      * Represents a point in 2D space
@@ -197,8 +202,12 @@
         this.x = x;
         /** @type {number} */
         this.y = y;
+        /** Return point in array form */
+        this.toArray = function(){
+            return [this.x,this.y];
+        }
         this.ID = generateUUID(); //necasarry?
-    };
+    }
 
     /**
      * Represents a QuasiPrime number and its parts
@@ -207,27 +216,36 @@
      * @param {number} PrimeA 
      * @param {number} PrimeB
      */
-    this.PrimeEnvelope = function (QuasiPrime = 0, PrimeA = 0, PrimeB = 0) {
+    this.PrimeEnvelope = function (QuasiPrime = 0, PrimeA = 0, PrimeB = 0, factored=false) {
         /** @type {number} */
-        this.QuasiPrime = QuasiPrime;
+        this.QuasiPrime = math.bignumber(QuasiPrime);
         /** @type {number} */
-        this.PrimeA = PrimeA;
+        this.PrimeA = math.bignumber(PrimeA);
         /** @type {number} */
-        this.PrimeB = PrimeB;
+        this.PrimeB = math.bignumber(PrimeB);
         /** @type {bool} */
-        this.Factored = false;
-        if (this.PrimeA != 0 && this.PrimeB != 0) {
-            if (this.PrimeA * this.PrimeB != this.QuasiPrime) {
-                console.log("Prime envelope error"); //throw error because there should be equality
-                this.QuasiPrime = this.PrimeA * this.PrimeB; //fix error
+        this.Factored = factored;
+        this.toString = function(){
+            return {
+                QuasiPrime: math.format(this.QuasiPrime, {notation: 'fixed'}),
+                PrimeA: math.format(this.PrimeA, {notation: 'fixed'}),
+                PrimeB: math.format(this.PrimeB, {notation: 'fixed'}),
+                Factored: this.Factored
             }
-            this.Factored = true;
+        }
+        if (!math.equal(this.PrimeA, 0) && !math.equal(this.PrimeB, 0)) {
+            if (!math.equal(math.multiply(this.PrimeA, this.PrimeB), this.QuasiPrime)) {
+                console.log("Prime envelope error"); //throw error because there should be equality
+                //this.QuasiPrime = math.evaluate(`${this.PrimeA} * ${this.PrimeB}`); //fix error
+            }
+            //this.Factored = true;
         }
 
     }
     this.retrieveRandomPrimeEnvelope = function (bits) {
         return $.getJSON(`https://rsagen.crownsterling.io/gen/${bits}`).then(function (data) {
             PE = new utils.PrimeEnvelope(data.pk, data.p1, data.p2);
+            PE.Factored = false;
             return PE
         });
 
@@ -254,12 +272,11 @@
      */
     this.Rotate = function (origin, subject, degrees) //kept origin variable for future understanding and use
     {
-
-        var radians = Math.PI / 180 * degrees;                                                              //replace with bignumber math class if needed      
-        var cos = Math.cos(radians);                                                                     //replace with bignumber math class if needed       
-        var sin = Math.sin(radians);
-        var OutputX = (cos * (subject.x - origin.x)) + (sin * (subject.y - origin.y)) + origin.x;
-        var OutputY = (cos * (subject.y - origin.y)) - (sin * (subject.x - origin.x)) + origin.y;
+        var radians = math.evaluate(`pi / 180 * ${degrees}`);                                                              //replace with bignumber math class if needed      
+        var cos = math.cos(radians);                                                                     //replace with bignumber math class if needed       
+        var sin = math.sin(radians);
+        var OutputX = math.evaluate(`(${cos} * (${subject.x} - ${origin.x})) + (${sin} * (${subject.y} - ${origin.y})) + ${origin.x}`);
+        var OutputY = math.evaluate(`(${cos} * (${subject.y} - ${origin.y})) - (${sin} * (${subject.x} - ${origin.x})) + ${origin.y}`);
         return new this.Point(OutputX, OutputY);
 
     };
@@ -385,7 +402,9 @@
      * @returns the distance a point is from 0,0
      */
     this.GetDistanceFromOrigin = function (Point) {
-        return Math.sqrt(Point.x ** 2 + Point.y ** 2);
+        //return Math.sqrt(Point.x ** 2 + Point.y ** 2);
+        //console.log(Point);
+        return math.distance([0,0], Point.toArray());
     }
     /**
      * Returns intersection Point of two line segments if they intersect. Returns false if they don't intersect.
@@ -393,7 +412,7 @@
      * @param {Line} L2 Line segment to intersect.
      * @returns {(Point|boolean)} Intersection Point of two line segments. Returns false if they don't intersect.
      */
-    this.GetIntersection = function (L1, L2)  //Line1, Line2
+    /* this.GetIntersection = function (L1, L2)  //Line1, Line2
     {
         // Denominator for ua and ub are the same, so store this calculation
         var zero = false;
@@ -433,8 +452,12 @@
 
         }
         return zero;
+    } */
+    this.GetIntersection = function (L1, L2){
+        var result = math.intersect(L1.from.toArray(), L1.to.toArray(), L2.from.toArray(), L2.to.toArray());
+        if (result==null)return false;
+        else return result;
     }
-
     /**
      * Given an array of line segments, retrieves the intersection points
      * @param {[Line]} Lines Line segments to intersect
@@ -446,7 +469,7 @@
         let output = prep.run();
         let returnval = new Array();
         output.forEach(intersection => {
-            returnval.push(intersection.point);
+            returnval.push(new utils.Point(intersection.point.x, intersection.point.y));//make new point in order to retain custom properties
         });
         return returnval;
     }

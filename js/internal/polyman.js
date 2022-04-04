@@ -1,7 +1,7 @@
 /** 
  * Generate regular polygons
 */
-var polyman = new function(){//implement two.js display option for debugging purposes
+var polyman = new function(){//implement two.js display option for debugging purposes...calculations within don't need bignumber support
     /**
      * Returns regular Polygon with given area, side count, and origin
      * @param {number} area Area of Polygon
@@ -17,7 +17,7 @@ var polyman = new function(){//implement two.js display option for debugging pur
         points.push(f);
         for (var i = 1; i < sidecount; i++)//point [0] already calculated, start at [1]
         {                                      
-            var ang = 360 / sidecount;
+            var ang = 360 / sidecount;//does not need big number support
             points.push(utils.Rotate(origin, points[i - 1], ang));
 
         }
@@ -41,8 +41,8 @@ var polyman = new function(){//implement two.js display option for debugging pur
 
             if (genrotations)//there is probably a much simpler way to achieve this
             {
-                var rdegrees = (360 / (i)) / 2; //calculate how many degrees to rotate
-                for (var o = 0; o < (Math.floor((24 / i) / 2) - 1); o++)//calculate how many times each polygon type is rotated
+                var rdegrees = (360 / (i)) / 2; //calculate how many degrees to rotate (does not need bignumber support)
+                for (var o = 0; o < (Math.floor((24 / i) / 2) - 1); o++)//calculate how many times each polygon type is rotated 
                 {
                     var temp2 = new Array();
                     var degrees;

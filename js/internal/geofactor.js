@@ -2,6 +2,13 @@
  * Factorize and Analyse Quasiprimes
 */
 var geofactor = new function () {
+    var EPS = 12;
+    math.config({
+        epsilon: 1e-12,
+        number: 'BigNumber',      // Default type of number:
+        // 'number' (default), 'BigNumber', or 'Fraction'
+        precision: 100             // Number of significant digits for BigNumbers
+    });
     /**
      * Returns the intersection points of regular polygons up to sidecntmax
      * @param {number} sidecntmax Maximum amount of sides
@@ -20,11 +27,11 @@ var geofactor = new function () {
     this.makeUnitRadiiVectors = function (sidecntmax = 12) {
         let LS = geofactor.retrieveVectorLocalStorage();
         if (LS != false) return LS;
-        
+
         else {
             let intersectionVectors = geofactor.makeUnitIntersectionVectors(sidecntmax);
             console.log(intersectionVectors);
-            let UnitRadius = Math.sqrt(1 / Math.PI);
+            let UnitRadius = math.evaluate(`sqrt(1 / pi)`); //allows for bignumber implementation
 
             let interiorRadii = new Set();//could probably use array for quicker implementation
             let exteriorRadii = new Set();
@@ -40,11 +47,12 @@ var geofactor = new function () {
     }
 
 
-    this.test = function (primes, bits, accuracy, sidecntmax, resetIntersections=false) {
+    this.test = function (primes, bits, accuracy, sidecntmax, resetIntersections = false) {
         var testResults = new Array();
-        if(resetIntersections)this.clearLocalStorage();
+        if (resetIntersections) this.clearLocalStorage();
         for (let i = 0; i < primes; i++) {
             utils.retrieveRandomPrimeEnvelope(bits).then(function (PrimeEnvelope) {
+                //console.log(PrimeEnvelope);
                 let result = geofactor.Factorize(PrimeEnvelope.QuasiPrime, accuracy, sidecntmax);
                 //console.log(result);
                 if (result) {
@@ -58,7 +66,7 @@ var geofactor = new function () {
     this.Factorize = function (QuasiPrime, range, sidecntmax = 12) {//range is percentage
         //let qpRadii = utils.circleAreaToRadius(QuasiPrime);
         let ms1 = performance.now();
-        let qpRadii = Math.sqrt(QuasiPrime);//no idea how this works tbh
+        let qpRadii = math.sqrt(QuasiPrime);//no idea how this works tbh...
         let radiiVectors = this.makeUnitRadiiVectors(sidecntmax);
         let rangecalc = range;//temporary range hack
         //let rangecalc = Math.round(Math.round(QuasiPrime ** 0.25) / 2 * range);
@@ -66,39 +74,53 @@ var geofactor = new function () {
         //console.log(radiiVectors);
         let testedMeans = new Array();
         let testedTests = new Array();
+        
+        //console.log(`1e-${EPS.toString()}`);
+        var bigmath = math.create({
+            number: 'BigNumber',    // Choose 'number' (default), 'BigNumber', or 'Fraction'
+            precision: 64,           // 64 by default, only applicable for BigNumbers
+            epsilon: math.number(`1e-${EPS.toString()}`)
+        });
+        //console.log(radiiVectors);
         radiiVectors.some(function (radii) {
-            let testradius = radii * qpRadii;//apply vector, not sure if accurate implementation
-            var testMean = Math.round(Math.sqrt((testradius ** 2 * Math.PI)));
+            let scope = { testradius: bigmath.multiply(math.bignumber(radii), math.bignumber(qpRadii)) };//apply vector, should be accurate
 
-            if (!testedMeans.includes(testMean)) {//checks if we've evaluated this value
-                testedMeans.push(testMean);
-
-                for (let i = -rangecalc; i <= rangecalc; i++) {
-                    testMean = testMean + i;
-                    if (!testedTests.includes(testMean) && testMean > 0) {//checks if we've evaluated this value
-                        testedTests.push(testMean);
+            var testMean = math.number(math.evaluate(`round(sqrt(((bignumber(testradius) ^ 2) * bignumber(number(pi)))))`, scope));
+            if (!testedMeans.includes(testMean.toString())) {//checks if we've evaluated this value
+                testedMeans.push(testMean.toString());
+                //console.log("blop");
+                //console.log(rangecalc);
+                for (let i = -rangecalc; i<=rangecalc; i++) {
+                    //console.log(i);
+                    let test = math.evaluate(`number(${testMean}) + ${i}`);//use bignumber?
+                    //console.log("test: " + test, " i: " + i);
+                    if (!primeData && !testedTests.includes(test.toString()) && bigmath.larger(test, 0)) {//checks if we've evaluated this value...use bignumber?
+                        testedTests.push(test.toString());
 
                         //let testArea = testmean**2;  //for memories sake
-                        let distance = Math.round(Math.sqrt(Math.abs((testMean ** 2) - QuasiPrime)));      //calculate distance of factors from mean, then round to nearest integer
+                        let distance = bigmath.evaluate(`round(sqrt(abs((${test} ^ 2) - ${QuasiPrime})))`);      //calculate distance of factors from mean, then round to nearest integer
 
-                        let P1 = testMean + distance;
-                        let P2 = testMean - distance;
+                        let P1 = bigmath.add(test, distance);
+                        let P2 = bigmath.subtract(test, distance);
+
                         //console.log(P1 + " " + P2);
-                        //console.log(testMean);
-                        //console.log(distance);
-                        if (P1 * P2 == QuasiPrime) {
+                        //console.log(testMean.toString());
+                        //console.log(distance.toString());
+
+                        if (bigmath.equal(bigmath.multiply(P1, P2), bignumber(QuasiPrime))) {
                             //console.log("bldoodg");
-                            primeData = new utils.PrimeEnvelope(QuasiPrime, P1, P2);
+                            primeData = new utils.PrimeEnvelope(QuasiPrime, P1.toString(), P2.toString(), true);
                             primeData.Range = i;
-                            primeData.testMean = testMean;
+                            primeData.testMean = test;
                             primeData.distance = distance;
+                            console.log(primeData);
                             return primeData;
                         }
                     }
 
                 }
             }
-
+            //console.log("b");
             if (primeData) return primeData;
         });
         let ms2 = performance.now();
